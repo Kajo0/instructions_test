@@ -1,7 +1,6 @@
 package instructions.instructions;
 
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
@@ -9,25 +8,30 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import instructions.converter.Converter;
-import instructions.instructions.data.Data;
 
 public class Tester {
 
     private final List<String> types = ImmutableList.of("A", "B", "C", "D", "E");
 
+    private Converter converter;
+
     public static void main(String[] args) {
         new Tester().run();
     }
 
-    private List<Data> initData(int count) {
-        List<Data> data = Lists.newArrayList();
+    private Tester() {
+        converter = new Converter();
+    }
 
-        String code;
-        int size = types.size();
-        Random rand = new Random(System.currentTimeMillis());
+    private List<String> initData(int count) {
+        List<String> data = Lists.newArrayList();
+
+        String code = "A";
+//        int size = types.size();
+//        Random rand = new Random(System.currentTimeMillis());
         for (int i = 0; i < count; ++i) {
-            code = types.get(rand.nextInt(size));
-            data.add(Data.of(code));
+//            code = types.get(rand.nextInt(size));
+            data.add(code);
         }
 
 //        System.out.println("\tData summary:");
@@ -40,23 +44,22 @@ public class Tester {
     }
 
     private void run() {
-        for (int i = 0; i < 8; ++i) {
+        for (int i = 0; i < 9; ++i) {
             runFor((int) Math.pow(10, i));
         }
     }
 
     private void runFor(int count) {
-        List<Data> data = initData(count);
+        List<String> data = initData(count);
 
         // init issue
-        Converter converter = new Converter();
-        test(data, converter::convertDumm);
         test(data, converter::convertSmart);
+        test(data, converter::convertDumm);
 
-        converter = new Converter();
-        long dumm = test(data, converter::convertDumm);
-        converter = new Converter();
+        converter.reset();
         long smart = test(data, converter::convertSmart);
+        converter.reset();
+        long dumm = test(data, converter::convertDumm);
 
         String winner = smart < dumm ? "SMART" : "DUMM";
 
@@ -65,7 +68,7 @@ public class Tester {
                         winner));
     }
 
-    private long test(List<Data> data, Function<List<Data>, List<Data>> func) {
+    private long test(List<String> data, Function<List<String>, List<String>> func) {
         Stopwatch timer = Stopwatch.createStarted();
         func.apply(data);
         return timer.elapsed(TimeUnit.MILLISECONDS);

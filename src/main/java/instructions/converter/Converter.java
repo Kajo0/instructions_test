@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import instructions.hyperon.Engine;
-import instructions.instructions.data.Data;
 
 public class Converter {
 
@@ -14,29 +13,32 @@ public class Converter {
         engine = new Engine();
     }
 
-    public List<Data> convertDumm(List<Data> list) {
+    public void reset() {
+        engine.reset();
+    }
+
+    public List<String> convertDumm(List<String> list) {
         return list.stream()
                 .filter(this::isGreenType)
                 .peek(this::modifyData)
                 .collect(Collectors.toList());
     }
 
-    public List<Data> convertSmart(List<Data> list) {
+    public List<String> convertSmart(List<String> list) {
         List<String> types = getTypes();
 
         return list.stream()
-                .filter(d -> types.contains(d.getCode()))
+                .filter(types::contains)
                 .peek(this::modifyData)
                 .collect(Collectors.toList());
     }
 
-    private Data modifyData(Data data) {
-        data.setCode(data.getCode() + " // 123");
-        return data;
+    private String modifyData(String data) {
+        return data + " // 123";
     }
 
-    private boolean isGreenType(Data data) {
-        return getTypes().contains(data.getCode());
+    private boolean isGreenType(String data) {
+        return getTypes().contains(data);
     }
 
     private List<String> getTypes() {

@@ -6,7 +6,11 @@ import com.google.common.collect.Lists;
 
 class Connection {
 
-    private List<String> cache;
+    volatile private List<String> cache;
+
+    void reset() {
+        cache = null;
+    }
 
     List<String> fetch() {
         if (cache == null) {

@@ -15,4 +15,8 @@ public class Engine {
 //        return connection.innerFetch();
     }
 
+    public void reset() {
+        connection.reset();
+    }
+
 }
